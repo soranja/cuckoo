@@ -8,9 +8,121 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Cuckoo?</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<div class="bg-yellow-500 h-screen w-full flex flex-col justify-center items-center text-2xl text-center leading-normal">
+			<h1 id="cuckoo-question" class="mb-10">Кукушка-кукушка, сколько <input id="cuckoo-input" type="text" class="px-2 py-2 mx-2 mt-2 rounded-md border-2 border-black" placeholder="продолжите вопрос" />?</h1>
+			
+			<div class="mb-4 text-base italic font-semibold">
+				<button id="cuckoo-btn" class="mb-2 px-10 py-4 bg-black text-white text-xl font-semibold rounded-md">Ку-ку!</button>
+				<p id="counter" class="hidden">Кукует: <span id="cuckoo-counter">0</span></p>
+				<p>1 ку-ку = 1 год</p>
+			</div>
+
+			<button id="reset-btn" class="hidden mb-2 px-6 py-2 bg-gray-800 text-white text-base font-semibold rounded-md">Новый вопрос!</button>
+			<p id="warning-message" class="text-red-500 hidden font-bold">Закончите вопрос!</p>
+		</div>
+		<audio id="cuckoo-audio" src="/cuckoo.mp3"></audio>
 	</body>
-</html>
+</html> 
+
+<script>
+	const cuckooQuestion = document.getElementById('cuckoo-question') as HTMLElement;
+	const cuckooBtn = document.getElementById('cuckoo-btn') as HTMLButtonElement;
+	const cuckooInput = document.getElementById('cuckoo-input') as HTMLInputElement;
+	const warningMessage = document.getElementById('warning-message') as HTMLElement;
+	const resetBtn = document.getElementById('reset-btn') as HTMLElement;
+	const cuckooAudio = document.getElementById('cuckoo-audio') as HTMLAudioElement;
+	const cuckooCounter = document.getElementById('cuckoo-counter') as HTMLElement;
+	const counter = document.getElementById('counter') as HTMLElement;
+
+	function getRandomCuckoos() {
+		const random = Math.random();
+
+		if (random < 0.5) {
+			// 50% probability for range 1 to 40
+			return Math.floor(Math.random() * 40) + 1;
+		} else if (random < 0.8) {
+			// 30% probability for range 41 to 90
+			return Math.floor(Math.random() * (90 - 40 + 1)) + 40;
+		} else {
+			// 20% probability for range 91 to 120
+			return Math.floor(Math.random() * (120 - 90 + 1)) + 90;
+		}
+	}
+
+	function getRandomTimer() {
+		const random = Math.random();
+
+		if (random < 0.25) {
+			// 25% probability for 0
+			return 0;
+		} else if (random < 0.75) {
+			// 50% probability for range 250 to 1000
+			return Math.floor(Math.random() * (1000 - 250 + 1)) + 250;
+		} else {
+			// 25% probability for range 1000 to 2000
+			return Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000;
+		}
+	}
+
+	function playCuckoos(cuckooCount: number, interval: number) {
+		let currentCuckoo = 0;
+		cuckooCounter.textContent = currentCuckoo.toString(); // Reset the counter display
+		counter.classList.remove('hidden'); // Show the counter
+
+		const cuckooInterval = setInterval(() => {
+			cuckooAudio.play(); // Play the cuckoo sound
+
+			if (currentCuckoo >= cuckooCount) {
+				clearInterval(cuckooInterval); // Stop after playing the required number of cuckoos
+				resetBtn.classList.remove('hidden'); // Show the reset button after cuckoos are done
+			} else {
+				currentCuckoo++; // Increment the cuckoo count after playing the sound
+				cuckooCounter.textContent = currentCuckoo.toString(); // Update counter display
+			}
+		}, interval);
+	}
+
+	const initialQuestion = 'Кукушка-кукушка, сколько <input id="cuckoo-input" type="text" class="py-2 mx-2 mt-2 border rounded-md" placeholder="продолжите вопрос" />?';
+
+	window.addEventListener('DOMContentLoaded', () => {
+		cuckooInput.value = '';
+	});
+
+	cuckooBtn.addEventListener('click', () => {
+		const inputValue = cuckooInput.value.trim();
+
+		if (inputValue !== '') {
+			warningMessage.classList.add('hidden');
+			cuckooQuestion.innerHTML = `Кукушка-кукушка, сколько ${inputValue}?`;
+			// resetBtn.classList.remove('hidden');
+			
+			// Generate cuckoo count and interval
+			const cuckooCount = getRandomCuckoos();
+			const interval = getRandomTimer();
+
+			// Play cuckoo sounds
+			playCuckoos(cuckooCount, interval);
+			console.log(cuckooCount);
+
+		} else {
+			warningMessage.classList.remove('hidden');
+			warningMessage.textContent = 'Закончите вопрос!';
+			// resetBtn.classList.add('hidden');
+		}
+	});
+
+	resetBtn.addEventListener('click', () => {
+		cuckooQuestion.innerHTML = initialQuestion;
+		warningMessage.classList.add('hidden');
+		resetBtn.classList.add('hidden');
+		counter.classList.add('hidden'); // Hide the counter when finished
+		cuckooInput.value = '';
+
+	});
+
+
+
+</script>
