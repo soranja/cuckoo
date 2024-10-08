@@ -13,6 +13,8 @@
 	<body>
 		<div class="bg-yellow-500 h-screen w-full flex flex-col justify-center items-center text-lg md:text-2xl text-center leading-normal">
 			<h1 id="cuckoo-question" class="mb-10 px-[5vh] md:px-0">Кукушка-кукушка, сколько <input id="cuckoo-input" type="text" class="px-2 py-2 mx-2 mt-2 rounded-md border-2 border-black" placeholder="продолжите вопрос" />?</h1>
+
+			<h1 id="cuckoo-question-value" class="hidden mb-10 px-[5vh] md:px-0"></h1>
 			
 			<div class="mb-4 text-base italic font-semibold">
 				<button id="cuckoo-btn" class="mb-2 px-10 py-4 bg-black text-white text-xl font-semibold rounded-md">Ку-ку!</button>
@@ -22,7 +24,7 @@
 
 			<button id="reset-btn" class="hidden mb-2 px-6 py-2 bg-gray-800 text-white text-base font-semibold rounded-md">Новый вопрос!</button>
 			<p id="warning-message" class="text-red-500 hidden font-bold">Закончите вопрос!</p>
-			
+
 		</div>
 		<audio id="cuckoo-audio" src="/cuckoo.mp3"></audio>
 	</body>
@@ -30,6 +32,7 @@
 
 <script>
 	const cuckooQuestion = document.getElementById('cuckoo-question') as HTMLElement;
+	const cuckooQuestionValue = document.getElementById('cuckoo-question-value') as HTMLElement;
 	const cuckooBtn = document.getElementById('cuckoo-btn') as HTMLButtonElement;
 	const cuckooInput = document.getElementById('cuckoo-input') as HTMLInputElement;
 	const warningMessage = document.getElementById('warning-message') as HTMLElement;
@@ -60,6 +63,8 @@
 	function countCuckoos(cuckooCount: number) {
 		let currentCuckoo = 0;
 		cuckooCounter.textContent = currentCuckoo.toString();
+		cuckooBtn.disabled = true;
+		cuckooBtn.style.backgroundColor = '#d3d3d3';
 		counter.classList.remove('hidden');
 
 		const interval = setInterval(() => {
@@ -74,14 +79,18 @@
 
 	}
 
-	const initialQuestion = 'Кукушка-кукушка, сколько <input id="cuckoo-input" type="text" class="py-2 mx-2 mt-2 border rounded-md" placeholder="продолжите вопрос" />?';
-
 	cuckooBtn.addEventListener('click', () => {
 		const inputValue = cuckooInput.value.trim();
 
+		console.log(inputValue);
+
 		if (inputValue !== '') {
 			warningMessage.classList.add('hidden');
-			cuckooQuestion.innerHTML = `Кукушка-кукушка, сколько ${inputValue}?`;
+			cuckooQuestion.classList.add('hidden');
+
+			cuckooQuestionValue.innerHTML = `Кукушка-кукушка, сколько ${inputValue}?`;
+			cuckooQuestionValue.classList.remove('hidden');
+
 			const cuckooCountNumber = getRandomCuckoos();
 			countCuckoos(cuckooCountNumber);
 			cuckooAudio.play();
@@ -93,10 +102,15 @@
 
 	// Reset Button - returns the init Q, hides itself, hides the counter, resets the input
 	resetBtn.addEventListener('click', () => {
-		cuckooQuestion.innerHTML = initialQuestion;
+		cuckooQuestionValue.classList.add('hidden');
+
+		cuckooQuestion.classList.remove('hidden');
 		resetBtn.classList.add('hidden');
 		counter.classList.add('hidden');
 		cuckooInput.value = '';
-	});
 
+		cuckooBtn.disabled = false;
+		cuckooBtn.style.backgroundColor = '#000';
+
+	});
 </script>
